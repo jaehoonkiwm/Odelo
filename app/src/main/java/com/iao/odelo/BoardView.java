@@ -165,7 +165,7 @@ public class BoardView extends View {
         for (int i = 1; i < positions.length - 1; ++i) {
             for (int j = 1; j < positions[i].length - 1; ++j) {
                 if (positions[i][j] == 0) {
-                    Log.d(TAG, i+","+j+"탐색");
+                    Log.d(TAG, i+","+j+"탐색");;
                     if(canLocatestone(colorOfStone, j, i)) {
                         printPositions();
                         Log.d(TAG, "TRUE : y:" + i + ", x:" + j);
