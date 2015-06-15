@@ -1,6 +1,8 @@
 package com.iao.odelo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -11,25 +13,59 @@ import android.view.View;
 
 public class SelectActivity extends Activity {
 
+    String gameMode;
+    Intent sendIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
+        gameMode = getIntent().getStringExtra("vs");
     }
 
     public void onArrButtonClicked(View v) {
-        Intent intent = new Intent(this, GameActivity.class);
+        sendIntent = new Intent(this, GameActivity.class);
 
         switch (v.getId()) {
             case R.id.btnByFour :
-                intent.putExtra("arr", 4);
+                sendIntent.putExtra("arr", 4);
                 break;
             case R.id.btnByEight :
-                intent.putExtra("arr", 8);
+                sendIntent.putExtra("arr", 8);
                 break;
         }
 
-        startActivity(intent);
+        if (gameMode.equals("computer")){
+            AlertDialog dialog = createDialogBox();
+            dialog.show();
+        } else {
+            startActivity(sendIntent);
+        }
+    }
+
+    private AlertDialog createDialogBox() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("돌을 선택하세요.");
+
+        builder.setNegativeButton("흑", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sendIntent.putExtra("stone", 1);
+                startActivity(sendIntent);
+            }
+        });
+
+        builder.setPositiveButton("백", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sendIntent.putExtra("stone", -1);
+                startActivity(sendIntent);
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        return dialog;
     }
 
     @Override
