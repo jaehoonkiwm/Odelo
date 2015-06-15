@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,16 +48,22 @@ public class GameActivity extends Activity {
         frameTurn = (FrameLayout) findViewById(R.id.frameTurn);
         frameWhite = (FrameLayout) findViewById(R.id.frameWhite);
 
+        Log.d(TAG, "1");
+
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        Log.d(TAG, "2");
         boardView = new BoardView(this, arrLength);
         boardLayout = (FrameLayout) findViewById(R.id.frameLayout);
         boardLayout.addView(boardView);
         boardLayout.setOnTouchListener(new TouchListener());
         boardView.setBoardSize(boardLayout.getWidth(), boardLayout.getHeight());
+        if (stone == -1) {
+            compute();
+        }
     }
 
     @Override
@@ -87,37 +94,44 @@ public class GameActivity extends Activity {
         public boolean onTouch(View v, MotionEvent event) {
             Log.i(TAG, event.getX() + " " + event.getY());
             //if (stone != 0 && boardView.turn != stone) {
-                if (boardView.drawStone((int) event.getX(), (int) event.getY())) {
-                    nextTurn();
-                }
+            if (boardView.drawStone((int) event.getX(), (int) event.getY())) {
+                nextTurn();
+            }
 //            } else if (stone != 0 && boardView.turn != stone) {
 //                Log.d(TAG, "***************************computer Turn");
 //                boardView.computerTurn(boardView.turn);
 //                nextTurn();
 //            }
-            boardView.clearArrayList();
 
-            if(setScore() == arrLength * arrLength)
-                gameOver();
-            else if (!boardView.canLocateAllStone(boardView.turn)){
-                Log.d(TAG, "next");
-                Toast.makeText(getApplicationContext(), "돌을 놓을 수 없으므로 턴을 넘깁니다.", Toast.LENGTH_SHORT).show();
-                nextTurn();
-            }
+            findNextLocation();
 
-            compute();
+            if (stone != 0)
+                compute();
             return false;
+        }
+    }
+
+    private void findNextLocation(){
+        boardView.clearArrayList();
+        setScore();
+        Log.d(TAG, "scoreBlack : " + scoreBlack + " scoreWhite : " + scoreWhite);
+        if ((scoreBlack + scoreWhite) == arrLength * arrLength || scoreBlack == 0 || scoreWhite == 0)
+            gameOver();
+        else if (!boardView.canLocateAllStone(boardView.turn)){
+            Log.d(TAG, "next");
+            Toast.makeText(getApplicationContext(), "돌을 놓을 수 없으므로 턴을 넘깁니다.", Toast.LENGTH_SHORT).show();
+            nextTurn();
         }
     }
 
     private void gameOver() {
         dialog = createDialogBox();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
     }
 
     private AlertDialog createDialogBox() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         String message = "흑 : " + scoreBlack + " 백 : " + scoreWhite + "\n";
         if (scoreBlack > scoreWhite)
             builder.setTitle("흑의 승리입니다.");
@@ -156,38 +170,33 @@ public class GameActivity extends Activity {
     private void nextTurn(){
         boardView.turn *= -1;
         if (boardView.turn == boardView.WHITESTONE) {
+            frameTurn.setBackgroundColor(Color.WHITE);
+            tvTurn.setTextColor(Color.BLACK);
             tvTurn.setText("백의 차례");
         } else {
+            frameTurn.setBackgroundColor(Color.BLACK);
+            tvTurn.setTextColor(Color.WHITE);
             tvTurn.setText("흑의 차례");
         }
+
+
     }
 
     private void compute(){
-        if (stone != 0 && boardView.turn != stone) {
+        if (boardView.turn != stone) {
             Log.d(TAG, "***************************computer Turn");
             boardView.computerTurn(boardView.turn);
+
             nextTurn();
-
-
-        boardView.clearArrayList();
-
-        if(setScore() == arrLength * arrLength)
-            gameOver();
-        else if (!boardView.canLocateAllStone(boardView.turn)){
-            Log.d(TAG, "next");
-            Toast.makeText(getApplicationContext(), "돌을 놓을 수 없으므로 턴을 넘깁니다.", Toast.LENGTH_SHORT).show();
-            nextTurn();
-        }
+            findNextLocation();
         }
     }
 
-    private int setScore() {
+    private void setScore() {
         scoreBlack = boardView.getScore(boardView.BLACKSTONE);
         scoreWhite = boardView.getScore(boardView.WHITESTONE);
 
         tvBlack.setText("흑 : " + scoreBlack);
         tvWhite.setText("백 : " + scoreWhite);
-
-        return scoreBlack + scoreWhite;
     }
 }

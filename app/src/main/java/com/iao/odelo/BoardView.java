@@ -30,8 +30,8 @@ public class BoardView extends View {
 
     private int [][] positions;        // 0은 빈공간, 1은 흑돌, -1은 백돌
     private int [][] signs = {{-1, -1}, {-1, 0}, {-1, 1},
-                              {0, -1},           {0, 1},
-                              {1, -1},  {1, 0},  {1, 1}};
+            {0, -1},           {0, 1},
+            {1, -1},  {1, 0},  {1, 1}};
     private int [] directions;
     private int [][] priorities;
     private ArrayList<Data> dList;
@@ -58,7 +58,7 @@ public class BoardView extends View {
         dList = new ArrayList<Data>();
         this.turn = BLACKSTONE;
         canLocateAllStone(turn);
-
+        Log.d(TAG, "3");
 
     }
 
@@ -100,17 +100,17 @@ public class BoardView extends View {
             }
 
             priorities[2][2] = priorities[2][7] = priorities[7][2] = priorities[7][7] = 5;
-            for (int i = 1; i < 9; ++i){
-                    Log.d(TAG,
-                            priorities[i][1] + " " +
-                            priorities[i][2] + " " +
-                            priorities[i][3] + " " +
-                            priorities[i][4] + " " +
-                            priorities[i][5] + " " +
-                            priorities[i][6] + " " +
-                            priorities[i][7] + " " +
-                            priorities[i][8] +"");
-            }
+//            for (int i = 1; i < 9; ++i){
+//                Log.d(TAG,
+//                        priorities[i][1] + " " +
+//                                priorities[i][2] + " " +
+//                                priorities[i][3] + " " +
+//                                priorities[i][4] + " " +
+//                                priorities[i][5] + " " +
+//                                priorities[i][6] + " " +
+//                                priorities[i][7] + " " +
+//                                priorities[i][8] +"");
+//            }
         }
     }
 
@@ -131,7 +131,7 @@ public class BoardView extends View {
 
         Log.d(TAG, "x : " + positionX + " y : " + positionY);
         if (positionX > 0 && positionX < positions[0].length - 1 &&
-                 positionY > 0 && positionY < positions.length - 1 &&
+                positionY > 0 && positionY < positions.length - 1 &&
                 positions[positionY][positionX] == 0) {
             /*if (canLocatestone(turn, positionX, positionY)) {
                 reverseStones(turn, positionX, positionY);
@@ -155,7 +155,7 @@ public class BoardView extends View {
     private int getPositionX(int positionX) {
         for (int i = 0; i < arrLength; ++i)
             if (positionX >= (50 + (i * width)) && positionX <= ((50+ width) + (i * width)))
-                    return i + 1;
+                return i + 1;
 
         return -1;
     }
@@ -232,7 +232,7 @@ public class BoardView extends View {
                 if (positions[i][j] == 0) {
                     //Log.d(TAG, i+","+j+"탐색");;
                     if(canLocatestone(colorOfStone, j, i)) {
-                       // printPositions();
+                        // printPositions();
                         //Log.d(TAG, "TRUE : y:" + i + ", x:" + j);
                         Data d = new Data(j, i, directions);
                         d.printData();
@@ -242,6 +242,8 @@ public class BoardView extends View {
                 }
             }
         }
+
+        printPositions();
 
         if (dList.size() > 0) {
             return true;
@@ -266,7 +268,8 @@ public class BoardView extends View {
     }
 
     public void clearArrayList() {
-        dList.clear();
+        if (dList.size() > 0)
+            dList.clear();
     }
 
     public void computerTurn(int colorOfStone) {
@@ -307,15 +310,15 @@ public class BoardView extends View {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
 
-            for (int i = 0; i < arrLength; ++i)
-                for (int j = 0; j < arrLength; ++j) {
-                    canvas.drawRect(50 + (j * width), 200 + (i * width), (50 + width) + (j * width), (200 + width) + (i * width), paint);
+        for (int i = 0; i < arrLength; ++i)
+            for (int j = 0; j < arrLength; ++j) {
+                canvas.drawRect(50 + (j * width), 200 + (i * width), (50 + width) + (j * width), (200 + width) + (i * width), paint);
 
-                    if (positions[i + 1][j + 1] == 1)
-                        canvas.drawBitmap(imageBlackStone, 50 + (j * width), 200 + (i * width), null);
-                    else if (positions[i + 1][j + 1] == -1)
-                        canvas.drawBitmap(imageWhiteStone, 50 + (j * width), 200 + (i * width), null);
-                }
+                if (positions[i + 1][j + 1] == 1)
+                    canvas.drawBitmap(imageBlackStone, 50 + (j * width), 200 + (i * width), null);
+                else if (positions[i + 1][j + 1] == -1)
+                    canvas.drawBitmap(imageWhiteStone, 50 + (j * width), 200 + (i * width), null);
+            }
     }
 
 }
