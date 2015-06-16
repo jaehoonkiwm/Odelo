@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +32,8 @@ public class GameActivity extends Activity {
     int arrLength;
     int scoreBlack, scoreWhite;
     int stone;
+    boolean isGameOver = false;
+    boolean isTouch = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,20 +52,21 @@ public class GameActivity extends Activity {
         frameTurn = (FrameLayout) findViewById(R.id.frameTurn);
         frameWhite = (FrameLayout) findViewById(R.id.frameWhite);
 
-        Log.d(TAG, "1");
-
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        Log.d(TAG, "2");
         boardView = new BoardView(this, arrLength);
         boardLayout = (FrameLayout) findViewById(R.id.frameLayout);
         boardLayout.addView(boardView);
         boardLayout.setOnTouchListener(new TouchListener());
         boardView.setBoardSize(boardLayout.getWidth(), boardLayout.getHeight());
-        if (stone == -1) {
+        if (stone == 0 || stone == 1) {
+            tvTurn.setTextColor(Color.WHITE);
+            frameTurn.setBackgroundColor(Color.BLACK);
+        } else if (stone == -1) {
+            frameTurn.setBackgroundColor(Color.WHITE);
             compute();
         }
     }
@@ -94,19 +99,21 @@ public class GameActivity extends Activity {
         public boolean onTouch(View v, MotionEvent event) {
             Log.i(TAG, event.getX() + " " + event.getY());
             //if (stone != 0 && boardView.turn != stone) {
-            if (boardView.drawStone((int) event.getX(), (int) event.getY())) {
-                nextTurn();
-            }
+            if (isTouch) {
+                if (boardView.drawStone((int) event.getX(), (int) event.getY())) {
+                    nextTurn();
+                }
 //            } else if (stone != 0 && boardView.turn != stone) {
 //                Log.d(TAG, "***************************computer Turn");
 //                boardView.computerTurn(boardView.turn);
 //                nextTurn();
 //            }
 
-            findNextLocation();
+                findNextLocation();
 
-            if (stone != 0)
-                compute();
+                if (stone != 0 && !isGameOver)
+                    compute();
+            }
             return false;
         }
     }
@@ -125,8 +132,10 @@ public class GameActivity extends Activity {
     }
 
     private void gameOver() {
+        isGameOver = true;
+        Log.d(TAG, "gameOver()");
         dialog = createDialogBox();
-        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(false);
         dialog.show();
     }
 
@@ -185,12 +194,22 @@ public class GameActivity extends Activity {
     private void compute(){
         if (boardView.turn != stone) {
             Log.d(TAG, "***************************computer Turn");
+            isTouch = false;
+            handler.sendEmptyMessageDelayed(0, 1000);
+        }
+    }
+
+    private Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
             boardView.computerTurn(boardView.turn);
 
             nextTurn();
             findNextLocation();
+            isTouch = true;
+            return false;
         }
-    }
+    });
 
     private void setScore() {
         scoreBlack = boardView.getScore(boardView.BLACKSTONE);
