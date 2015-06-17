@@ -35,6 +35,8 @@ public class GameActivity extends Activity {
     boolean isGameOver = false;
     boolean isTouch = true;
 
+    SegmentTimer timer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +54,8 @@ public class GameActivity extends Activity {
         frameTurn = (FrameLayout) findViewById(R.id.frameTurn);
         frameWhite = (FrameLayout) findViewById(R.id.frameWhite);
 
+        timer = new SegmentTimer();
+        timer.start();
     }
 
     @Override
@@ -69,6 +73,8 @@ public class GameActivity extends Activity {
             frameTurn.setBackgroundColor(Color.WHITE);
             compute();
         }
+
+
     }
 
     @Override
@@ -136,12 +142,14 @@ public class GameActivity extends Activity {
         Log.d(TAG, "gameOver()");
         dialog = createDialogBox();
         dialog.setCancelable(false);
+        if (timer.isTiming())
+            timer.stop();
         dialog.show();
     }
 
     private AlertDialog createDialogBox() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String message = "흑 : " + scoreBlack + " 백 : " + scoreWhite + "\n";
+        String message = timer.getTime() + "\n흑 : " + scoreBlack + " 백 : " + scoreWhite + "\n";
         if (scoreBlack > scoreWhite)
             builder.setTitle("흑의 승리입니다.");
         else if(scoreWhite > scoreBlack)
@@ -172,6 +180,7 @@ public class GameActivity extends Activity {
     }
     private void initGame(){
         setScore();
+        timer.start();
         boardView.turn = 1;
         tvTurn.setText("흑의 차례");
     }
@@ -217,5 +226,12 @@ public class GameActivity extends Activity {
 
         tvBlack.setText("흑 : " + scoreBlack);
         tvWhite.setText("백 : " + scoreWhite);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (timer.isTiming())
+            timer.stop();
     }
 }
