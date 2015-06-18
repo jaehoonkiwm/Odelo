@@ -38,4 +38,14 @@
         android:layout_alignEnd="@+id/textView"
         android:onClick="onVsButtonClicked" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="블루투스대전"
+        android:id="@+id/btnVsBluetooth"
+        android:textSize="40dp"
+        android:onClick="onVsButtonClicked"
+        android:layout_below="@+id/btnVsComputer"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

@@ -133,13 +133,6 @@ public class BoardView extends View {
         if (positionX > 0 && positionX < positions[0].length - 1 &&
                 positionY > 0 && positionY < positions.length - 1 &&
                 positions[positionY][positionX] == 0) {
-            /*if (canLocatestone(turn, positionX, positionY)) {
-                reverseStones(turn, positionX, positionY);
-                resetDirection();
-                invalidate();
-               // printPositions();
-                return true;
-            }*/
 
             for (int i = 0; i < dList.size(); ++i) {
                 if(dList.get(i).positionX == positionX && dList.get(i).positionY == positionY) {

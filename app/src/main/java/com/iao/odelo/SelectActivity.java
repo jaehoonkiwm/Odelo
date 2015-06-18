@@ -6,13 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 
 public class SelectActivity extends Activity {
-
     String gameMode;
     Intent sendIntent;
 
@@ -21,16 +21,19 @@ public class SelectActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
         gameMode = getIntent().getStringExtra("vs");
+        sendIntent = new Intent(this, GameActivity.class);
+
     }
 
     public void onArrButtonClicked(View v) {
-        sendIntent = new Intent(this, GameActivity.class);
 
         switch (v.getId()) {
             case R.id.btnByFour :
+                sendIntent.putExtra("vs", gameMode);
                 sendIntent.putExtra("arr", 4);
                 break;
             case R.id.btnByEight :
+                sendIntent.putExtra("vs", gameMode);
                 sendIntent.putExtra("arr", 8);
                 break;
         }

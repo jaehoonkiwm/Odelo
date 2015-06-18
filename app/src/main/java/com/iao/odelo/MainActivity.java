@@ -23,13 +23,20 @@ public class MainActivity extends Activity {
         switch (v.getId()) {
             case R.id.btnVsPerson :
                 intent.putExtra("vs", "person");
+                startActivity(intent);
                 break;
             case R.id.btnVsComputer :
                 intent.putExtra("vs", "computer");
+                startActivity(intent);
+                break;
+            case R.id.btnVsBluetooth :
+                Intent sendIntent = new Intent(this, GameActivity.class);
+                sendIntent.putExtra("vs", "bluetooth");
+                sendIntent.putExtra("arr", 8);
+                startActivity(sendIntent);
                 break;
         }
 
-        startActivity(intent);
     }
 
     @Override
