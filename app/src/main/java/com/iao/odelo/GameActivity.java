@@ -41,6 +41,7 @@ public class GameActivity extends ActionBarActivity {
     int scoreBlack, scoreWhite;
     int stone;
     int myTurn;
+    int cntNextTurn;
     boolean isGameOver = false;
     boolean isTouch = true;
 
@@ -80,6 +81,7 @@ public class GameActivity extends ActionBarActivity {
         stone = getIntent().getIntExtra("stone", 0);
         gameMode = getIntent().getStringExtra("vs");
         myTurn = boardView.BLACKSTONE;
+
         if(!gameMode.equals("bluetooth"))
             getSupportActionBar().hide();
         else {
@@ -92,6 +94,7 @@ public class GameActivity extends ActionBarActivity {
                 Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
                 activity.finish();
             }
+            isTouch = false;
         }
 
         Log.d(TAG, arrLength + " " + stone);
@@ -103,7 +106,7 @@ public class GameActivity extends ActionBarActivity {
         frameBlack = (FrameLayout) findViewById(R.id.frameBlack);
         frameTurn = (FrameLayout) findViewById(R.id.frameTurn);
         frameWhite = (FrameLayout) findViewById(R.id.frameWhite);
-
+        cntNextTurn = 0;
         timer = new SegmentTimer();
         timer.start();
     }
@@ -131,16 +134,18 @@ public class GameActivity extends ActionBarActivity {
         private static final String TAG = "TouchListener";
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            Log.i(TAG, event.getX() + " " + event.getY() + " " + isTouch);
-            int x = (int) event.getX();
-            int y = (int) event.getY();
+
+            float x = event.getX();
+            float y = event.getY();
+            Log.i(TAG, x + " " + y + " " + isTouch);
 
             if (isTouch) {
                 if (boardView.drawStone(x, y)) {
-
+                    if (cntNextTurn == 1)
+                        cntNextTurn = 0;
                     nextTurn();
                     if (gameMode.equals("bluetooth")) {
-                        String points = x + " " + y;
+                        String points = boardView.getPositionX(x) + " " + boardView.getPositionY(y);
                         sendMessage(points);
                         isTouch = false;
                     }
@@ -150,7 +155,9 @@ public class GameActivity extends ActionBarActivity {
 
                 if (stone != 0 && !isGameOver)
                     compute();
-
+            } else if (gameMode.equals("bluetooth")){
+                if(mChatService.getState() != mChatService.STATE_CONNECTED)
+                Toast.makeText(getApplication(), "메뉴버튼으로 블루투스 연결을 하세요.", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -162,14 +169,16 @@ public class GameActivity extends ActionBarActivity {
         boardView.clearArrayList();
         setScore();
         Log.d(TAG, "scoreBlack : " + scoreBlack + " scoreWhite : " + scoreWhite);
-        if ((scoreBlack + scoreWhite) == arrLength * arrLength || scoreBlack == 0 || scoreWhite == 0)
+        if ((scoreBlack + scoreWhite) == arrLength * arrLength || scoreBlack == 0 || scoreWhite == 0 || cntNextTurn > 1)
             gameOver();
         else if (!boardView.canLocateAllStone(boardView.turn)){
             Log.d(TAG, "next");
-            if (gameMode.equals("bluetooth"))
+            if (gameMode.equals("bluetooth")) {
                 sendMessage("상대방이 돌을 놓을 수 없어 다시 턴이 돌아왔습니다.");
+                isTouch = false;
+            }
             Toast.makeText(getApplicationContext(), "돌을 놓을 수 없으므로 턴을 넘깁니다.", Toast.LENGTH_SHORT).show();
-            isTouch = false;
+            ++cntNextTurn;
             nextTurn();
         }
     }
@@ -379,6 +388,7 @@ public class GameActivity extends ActionBarActivity {
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             if (myTurn == boardView.BLACKSTONE) {
                                 Toast.makeText(getApplicationContext(), "흑입니다.", Toast.LENGTH_SHORT).show();
+                                isTouch = true;
                                 getSupportActionBar().setTitle("흑");
                             }else {
                                 Toast.makeText(getApplicationContext(), "백입니다.", Toast.LENGTH_SHORT).show();
@@ -407,15 +417,18 @@ public class GameActivity extends ActionBarActivity {
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     Toast.makeText(getApplicationContext(), mConnectedDeviceName + ":  " + readMessage, Toast.LENGTH_SHORT).show();
-                    String[] points = readMessage.split(" ");
-                    if (boardView.drawStone(Integer.parseInt(points[0]), Integer.parseInt(points[1]))) {
-                        nextTurn();
-                        findNextLocation();
 
-                        if (stone != 0 && !isGameOver)
-                            compute();
+                    if (readMessage.length() < 8) {
+                        String[] points = readMessage.split(" ");
+                        if (boardView.drawStone(Integer.parseInt(points[0]), Integer.parseInt(points[1]))) {
+                            nextTurn();
+                            findNextLocation();
+
+                            if (stone != 0 && !isGameOver)
+                                compute();
+                        }
+                        isTouch = true;
                     }
-                    isTouch = true;
                     Log.d(TAG, "istouch " + isTouch);
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:

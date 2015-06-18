@@ -125,7 +125,7 @@ public class BoardView extends View {
         imageWhiteStone = Bitmap.createScaledBitmap(imageTmp, this.width, this.width, false);
     }
 
-    public boolean drawStone(int x, int y) {
+    public boolean drawStone(float x, float y) {
         int positionX = getPositionX(x);
         int positionY = getPositionY(y);
 
@@ -145,7 +145,23 @@ public class BoardView extends View {
         return false;
     }
 
-    private int getPositionX(int positionX) {
+    public boolean drawStone(int positionX, int positionY) {
+        if (positionX > 0 && positionX < positions[0].length - 1 &&
+                positionY > 0 && positionY < positions.length - 1 &&
+                positions[positionY][positionX] == 0) {
+
+            for (int i = 0; i < dList.size(); ++i) {
+                if(dList.get(i).positionX == positionX && dList.get(i).positionY == positionY) {
+                    reverseStones(turn, positionX, positionY, dList.get(i).directions);
+                    invalidate();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int getPositionX(float positionX) {
         for (int i = 0; i < arrLength; ++i)
             if (positionX >= (50 + (i * width)) && positionX <= ((50+ width) + (i * width)))
                 return i + 1;
@@ -153,7 +169,7 @@ public class BoardView extends View {
         return -1;
     }
 
-    private int getPositionY(int positionY) {
+    public int getPositionY(float positionY) {
         for (int i = 0; i < arrLength; ++i)
             if (positionY >= (200 + (i * width)) && positionY <= ((200 + width) + (i * width)))
                 return i + 1;
