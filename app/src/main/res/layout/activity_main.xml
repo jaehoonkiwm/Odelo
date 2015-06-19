@@ -3,49 +3,53 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="오델로"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:textSize="80dp"
-        android:id="@+id/textView" />
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:background="@drawable/board">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1 : 1 대전"
         android:id="@+id/btnVsPerson"
         android:textSize="40dp"
+        android:onClick="onVsButtonClicked"
+        android:background="@drawable/btnperson"
         android:layout_centerVertical="true"
-        android:layout_alignLeft="@+id/btnVsComputer"
-        android:layout_alignStart="@+id/btnVsComputer"
-        android:layout_alignRight="@+id/btnVsComputer"
-        android:layout_alignEnd="@+id/btnVsComputer"
-        android:onClick="onVsButtonClicked" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="컴퓨터 대전"
         android:id="@+id/btnVsComputer"
         android:textSize="40dp"
+        android:onClick="onVsButtonClicked"
         android:layout_below="@+id/btnVsPerson"
-        android:layout_alignRight="@+id/textView"
-        android:layout_alignEnd="@+id/textView"
-        android:onClick="onVsButtonClicked" />
+        android:layout_alignLeft="@+id/btnVsPerson"
+        android:layout_alignStart="@+id/btnVsPerson"
+        android:layout_alignRight="@+id/btnVsPerson"
+        android:layout_alignEnd="@+id/btnVsPerson"
+        android:background="@drawable/btncomputer" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="블루투스대전"
         android:id="@+id/btnVsBluetooth"
         android:textSize="40dp"
         android:onClick="onVsButtonClicked"
         android:layout_below="@+id/btnVsComputer"
-        android:layout_centerHorizontal="true" />
+        android:background="@drawable/btnbluetooth"
+        android:layout_alignLeft="@+id/btnVsComputer"
+        android:layout_alignStart="@+id/btnVsComputer"
+        android:layout_alignRight="@+id/btnVsComputer"
+        android:layout_alignEnd="@+id/btnVsComputer" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:background="@drawable/othello"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="57dp" />
 
 </RelativeLayout>

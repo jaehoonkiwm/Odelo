@@ -38,7 +38,7 @@ public class SelectActivity extends Activity {
                 break;
         }
 
-        if (gameMode.equals("computer")){
+        if (gameMode.equals("btncomputer")){
             AlertDialog dialog = createDialogBox();
             dialog.show();
         } else {

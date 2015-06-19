@@ -249,7 +249,7 @@ public class GameActivity extends ActionBarActivity {
 
     private void compute(){
         if (boardView.turn != stone) {
-            Log.d(TAG, "***************************computer Turn");
+            Log.d(TAG, "***************************btncomputer Turn");
             isTouch = false;
             handler.sendEmptyMessageDelayed(0, 1000);
         }

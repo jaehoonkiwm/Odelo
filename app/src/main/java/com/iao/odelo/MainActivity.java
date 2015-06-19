@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
                 startActivity(intent);
                 break;
             case R.id.btnVsComputer :
-                intent.putExtra("vs", "computer");
+                intent.putExtra("vs", "btncomputer");
                 startActivity(intent);
                 break;
             case R.id.btnVsBluetooth :
